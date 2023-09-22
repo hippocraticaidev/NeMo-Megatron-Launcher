@@ -39,17 +39,11 @@ class LAMBADA(Task):
 
         try:
             if not os.path.exists(path + "/lambada_test.jsonl"):
-                download_file(
-                    "https://openaipublic.blob.core.windows.net/gpt-2/data/lambada_test.jsonl",
-                    local_file=path + "/lambada_test.jsonl",
-                    expected_checksum="4aa8d02cd17c719165fc8a7887fddd641f43fcafa4b1c806ca8abc31fabdb226",
-                )
+                sh(f"wget https://openaipublic.blob.core.windows.net/gpt-2/data/lambada_test.jsonl -O {path}/lambada_test.jsonl")
         except:
             # fallback - for some reason best_download doesnt work all the time here
-            sh("wget https://openaipublic.blob.core.windows.net/gpt-2/data/lambada_test.jsonl -O data/lambada/lambada_test.jsonl")
-            sh(
-                'echo "4aa8d02cd17c719165fc8a7887fddd641f43fcafa4b1c806ca8abc31fabdb226  data/lambada/lambada_test.jsonl" | sha256sum --check'
-            )
+            sh(f"wget https://openaipublic.blob.core.windows.net/gpt-2/data/lambada_test.jsonl -O {path}/lambada_test.jsonl")
+            sh(f'echo "4aa8d02cd17c719165fc8a7887fddd641f43fcafa4b1c806ca8abc31fabdb226  {path}/lambada_test.jsonl" | sha256sum --check')
 
         self.cache_dir = path
 
