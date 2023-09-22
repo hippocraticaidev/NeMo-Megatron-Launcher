@@ -16,6 +16,7 @@ from pprint import pprint
 
 from . import hellaswag, lambada, piqa, prompt, race, superglue, wikitext, winogrande
 from .common import HFTask
+from . import HippocraticAI
 
 ########################################
 # Translation tasks
@@ -41,6 +42,7 @@ TASK_REGISTRY = {
     "wikitext2": wikitext.WikiText,
     "wikitext103": wikitext.WikiText103,
     "winogrande": winogrande.Winogrande,
+    **HippocraticAI.create_all_tasks()
 }
 
 PROMPT_TASK_REGISTRY = {"prompt": prompt.Prompt}

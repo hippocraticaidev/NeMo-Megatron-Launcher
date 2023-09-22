@@ -23,6 +23,10 @@ import traceback
 import numpy as np
 from nemo.utils import logging
 
+import boto3
+import pandas as pd
+from datasets import Dataset
+
 
 class ExitCodeError(Exception):
     pass
@@ -233,3 +237,20 @@ def set_seed(seed):
     # torch.manual_seed(seed)
     # if args.n_gpu > 0:
     #     torch.cuda.manual_seed_all(seed)
+    
+    
+def split_s3_path(s3_path):
+    path_parts=s3_path.replace("s3://","").split("/")
+    bucket=path_parts.pop(0)
+    key="/".join(path_parts)
+    return bucket, key
+
+def get_s3_csv_dataset(dataset_path):
+    s3 = boto3.client('s3')
+    bucket_name = split_s3_path(dataset_path)[0]
+    key = split_s3_path(dataset_path)[1]
+    print(f'bucket: {bucket_name}, key: {key}')
+    obj = s3.get_object(Bucket=bucket_name, Key=key)
+    df = pd.read_csv(obj['Body'])
+    return Dataset.from_pandas(df)
+
