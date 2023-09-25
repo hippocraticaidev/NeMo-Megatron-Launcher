@@ -10,7 +10,7 @@ defaults:
   - prompt_learning: null
   - adapter_learning: null
   - ia3_learning: null
-  - evaluation: gpt3/evaluate_all
+  - evaluation: llama/evaluate_boolq
   - export: gpt3/export_gpt3
   - rlhf_rm: gpt3/2b_rm
   - rlhf_ppo: gpt3/2b_ppo
@@ -24,22 +24,16 @@ hydra:
 debug: False
 
 stages:
-  #- data_preparation
-  #- training
-  - conversion
-  #- prompt_learning
-  #- adapter_learning
-  #- ia3_learning
-  #- evaluation
-  #- export
+  - evaluation
 
 cluster_type: bcm  # bcm, bcp, or k8s. If bcm or k8s, it must match - cluster above.
-launcher_scripts_path: ???  # Path to NeMo Megatron Launch scripts, should ends with /launcher_scripts
+launcher_scripts_path: /admin/ubuntu/neha/jedha/NeMo-Megatron-Launcher/launcher_scripts  # Path to NeMo Megatron Launch scripts, should ends with /launcher_scripts
 data_dir: ${launcher_scripts_path}/data  # Location to store and read the data.
-base_results_dir: ${launcher_scripts_path}/results  # Location to store the results, checkpoints and logs.
+base_results_dir: ${launcher_scripts_path}/results_launcher  # Location to store the results, checkpoints and logs.
 container_mounts: # List of additional paths to mount to container. They will be mounted to same path.
-  - null
-container: nvcr.io/ea-bignlp/ga-participants/nemofw-training:23.08.02
+  - /pre-training-model-checkpoint
+  - /admin
+container: /admin/enroot/saved/nvidia-nemofw-training-23_08_02-aws-v2.sqsh
 
 wandb_api_key_file: null  # File where the w&B api key is stored. Key must be on the first line.
 

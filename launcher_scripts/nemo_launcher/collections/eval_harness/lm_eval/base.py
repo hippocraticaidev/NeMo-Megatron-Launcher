@@ -423,23 +423,30 @@ class MultipleChoiceTask(Task):
 
     def process_results(self, doc, results):
         gold = doc["gold"]
-        num_choices = len(doc["choices"])
-        logprobs = results[:num_choices]
 
-        choice_tokens = results[num_choices:]
-        assert len(logprobs) == len(choice_tokens)
-        normed_logprobs = [lp / len(x) for lp, x in zip(logprobs, choice_tokens)]
-        acc = 1.0 if np.argmax(logprobs) == gold else 0.0
-        acc_norm = 1.0 if np.argmax(normed_logprobs) == gold else 0
-
-        # NOTE(zhunliu): the previous normed setting is not ideal, norm by char
-        # completion_len = np.array([float(len(i)) for i in doc["choices"]])
-        # acc_norm = 1. if np.argmax(results / completion_len) == gold else 0.
+        acc = 1.0 if np.argmax(results) == gold else 0.0
 
         return {
             "acc": acc,
-            "acc_norm": acc_norm,
         }
+        # gold = doc["gold"]
+        # num_choices = len(doc["choices"])
+        # logprobs = results[:num_choices]
+
+        # choice_tokens = results[num_choices:]
+        # # assert len(logprobs) == len(choice_tokens)
+        # normed_logprobs = [lp / len(x) for lp, x in zip(logprobs, choice_tokens)]
+        # acc = 1.0 if np.argmax(logprobs) == gold else 0.0
+        # acc_norm = 1.0 if np.argmax(normed_logprobs) == gold else 0
+
+        # # NOTE(zhunliu): the previous normed setting is not ideal, norm by char
+        # # completion_len = np.array([float(len(i)) for i in doc["choices"]])
+        # # acc_norm = 1. if np.argmax(results / completion_len) == gold else 0.
+
+        # return {
+        #     "acc": acc,
+        #     "acc_norm": acc_norm,
+        # }
 
     def serialize_results(self, doc, results):
         num_choices = len(doc["choices"])

@@ -4,21 +4,22 @@ run:
   dependency: "singleton"
   nodes: ${divide_ceil:${evaluation.model.model_parallel_size}, 8} # 8 gpus per node
   ntasks_per_node: ${divide_ceil:${evaluation.model.model_parallel_size}, ${.nodes}}
-  eval_name: eval_boolq
-  model_train_name: llama2_7b
+  eval_name: eval_hippo_2tasks
+  model_train_name: llama2_70b_baseline
   train_dir: ${base_results_dir}/${.model_train_name}
-  tasks: boolq  # supported: lambada, boolq, race, piqa, hellaswag, winogrande, wikitext2, wikitext103 OR all_tasks
+  tasks: hippo_SL_handpicked_evals,hippo_hqm_v2 #hippo_knowledge_evals_combined,hippo_SL_sentence_selection,hippo_UMLS_definitions_eval_B,hippo_hqm_v2,hippo_esrd_combined,hippo_knowledge_evals_combined,hippo_SL_handpicked_evals,hippo_SL_sentence_selection,hippo_SL_word_perplex,hippo_hqm_v2,hippo_UMLS_definitions_eval_B # supported: hippo_tkr_combined,lambada, boolq, race, piqa, hellaswag, winogrande, wikitext2, wikitext103 OR all_tasks
   results_dir: ${base_results_dir}/${.model_train_name}/${.eval_name}
 
 model:
   model_type: nemo-llama
-  nemo_model: null # run eval with a .nemo file, produced when converted interleaved checkpoints
-  #checkpoint_folder: ${evaluation.run.train_dir}/results/checkpoints
-  #checkpoint_name: latest # latest OR name pattern of a checkpoint (e.g. megatron_gpt-*last.ckpt)
-  #hparams_file: ${evaluation.run.train_dir}/results/hparams.yaml
-  tensor_model_parallel_size: 1
-  pipeline_model_parallel_size: 1
+  nemo_model: /pre-training-model-checkpoint/pre-training-model-checkpoint/llama2_checkpoints/nemo_llama/llama-2-70b-TP8-PP8 # run eval with a .nemo file, produced when converted interleaved checkpoints
+  checkpoint_folder: /pre-training-model-checkpoint/pre-training-model-checkpoint/llama2_checkpoints/nemo_llama
+  # checkpoint_name: latest
+  checkpoint_name: llama-2-70b-TP8-PP8  # latest OR name pattern of a checkpoint (e.g. megatron_gpt-*last.ckpt)
+  hparams_file: /pre-training-model-checkpoint/pre-training-model-checkpoint/llama2_checkpoints/nemo_llama/llama-2-70b-TP8-PP8/model_config.yaml
+  tensor_model_parallel_size: 8
+  pipeline_model_parallel_size: 8
   model_parallel_size: ${multiply:${.tensor_model_parallel_size}, ${.pipeline_model_parallel_size}}
   precision: bf16 # must match training precision - 32, 16 or bf16
   eval_batch_size: 4
-  #tokenizer_model: ${data_dir}/llama/llama_tokenizer.model 
+  tokenizer_model: /pre-training-model-checkpoint/pre-training-model-checkpoint/llama2_checkpoints/nemo_llama/llama-2-7b-TP8/36d152b2380c487091636d0607596630_d2df43c89d194bfbbaf06ce342687c8e_tokenizer.model
